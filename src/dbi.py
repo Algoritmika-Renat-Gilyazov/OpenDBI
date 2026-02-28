@@ -1,13 +1,12 @@
-from enum import Enum
 import json
 import pathlib as pl
+from sys import argv
 
-class Format(Enum):
-    ESC="\033["
-    RED=f"{ESC}31m"
-    GREEN=f"{ESC}32m"
-    YELLOW=f"{ESC}33m"
-    RESET=f"{ESC}0m"
+ESC="\033["
+RED=f"{ESC}31m"
+GREEN=f"{ESC}32m"
+YELLOW=f"{ESC}33m"
+RESET=f"{ESC}0m"
 
 def inp(msg: str, title: str, default, path=False):
     name = input(msg)
@@ -30,7 +29,7 @@ def CreateProject() -> int:
     try:
         root.mkdir(exist_ok=True)
     except PermissionError as e:
-        print(f"{Format.RED}Cannot access path: '{str(root)}'!{Format.RESET}")
+        print(f"{RED}Cannot access path: '{str(root)}'!{RESET}")
         return 1
     cont = True
     if pl.Path(root / "dbi.json").exists():
@@ -55,5 +54,22 @@ def CreateProject() -> int:
         return 2
     with open(root / "src" / "main.py", 'w') as f:
         f.write("print('Hi!')")
-    print(f"{Format.GREEN}The project '{id}'('{name}') was created successfully!{Format.RESET}")
+    print(f"{GREEN}The project '{id}'('{name}') was created successfully!{RESET}")
     return 0
+
+version = "1.0b1"
+
+if __name__ == "__main__":
+    try:
+        if argv[1] == "init":
+            CreateProject()
+        elif argv[1] == "info":
+            print("OpenDBI")
+            print(version)
+        else:
+            print("""
+                init - Create Project.
+            """)
+    except IndexError:
+        print("""init - Create Project.
+            """)
