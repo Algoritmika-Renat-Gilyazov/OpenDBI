@@ -69,17 +69,20 @@ def GetHelp():
                 run - Run the project. Run this command at root of project only!
             """)
 def RunProject():
-    python_path = executable
-    if python_path == "" or not pl.Path(python_path).exists():
-        print(f"{YELLOW}Please set environment variable PYTHON_HOME at your Python installation!{RESET}")
+    import shutil
+    python_path = shutil.which("python") or shutil.which("python3")
+    
+    if not python_path:
+        print(f"{YELLOW}Python not found in PATH! Please install Python.{RESET}")
         return 1
+        
     try:
         res = run(
-            f"\"{python_path}\" src/main.py", 
-            shell=(platform.system() == "Windows"), 
+            [python_path, "src/main.py"],
+            shell=(platform.system() == "Windows"),
             capture_output=True,
             text=True
-            )
+        )
         print(RED + res.stderr + RESET)
         print(res.stdout)
     except FileNotFoundError:
