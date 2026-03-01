@@ -59,6 +59,13 @@ def CreateProject() -> int:
 
 version = "1.0b1"
 
+def GetHelp():
+    print("""
+                init - Create Project.
+                info - Get information about OpenDBI.
+                help - Get help.
+            """)
+
 if __name__ == "__main__":
     try:
         if argv[1] == "init":
@@ -66,10 +73,9 @@ if __name__ == "__main__":
         elif argv[1] == "info":
             print("OpenDBI")
             print(version)
+        elif argv[1] == "help":
+            GetHelp()
         else:
-            print("""
-                init - Create Project.
-            """)
+            GetHelp()
     except IndexError:
-        print("""init - Create Project.
-            """)
+        GetHelp()
