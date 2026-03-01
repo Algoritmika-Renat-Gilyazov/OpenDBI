@@ -1,6 +1,9 @@
 import json
 import pathlib as pl
+import platform
 from sys import argv
+from os import environ as env
+from subprocess import run
 
 ESC="\033["
 RED=f"{ESC}31m"
@@ -64,7 +67,25 @@ def GetHelp():
                 init - Create Project.
                 info - Get information about OpenDBI.
                 help - Get help.
+                run - Run the project. Run this command at root of project only!
             """)
+def RunProject():
+    python_path = env.get("PYTHON_HOME", "")
+    if python_path == "" or not pl.Path(python_path).exists():
+        print(f"{YELLOW}Please set environment variable PYTHON_HOME at your Python installation!{RESET}")
+        return 1
+    try:
+        res = run(
+            f"\"{pl.Path(python_path) / "python"}\" src/main.py", 
+            shell=(platform.system() == "Windows"), 
+            capture_output=True,
+            text=True
+            )
+        print(RED + res.stderr + RESET)
+        print(res.stdout)
+    except FileNotFoundError:
+        print(f"{RED}Python environment at PYTHON_HOME({python_path}) is incorrect!{RESET}")
+        return 1
 
 if __name__ == "__main__":
     try:
@@ -75,6 +96,8 @@ if __name__ == "__main__":
             print(version)
         elif argv[1] == "help":
             GetHelp()
+        elif argv[1] == "run":
+            RunProject()
         else:
             GetHelp()
     except IndexError:
