@@ -1,8 +1,7 @@
 import json
 import pathlib as pl
 import platform
-from sys import argv
-from os import environ as env
+from sys import argv, executable
 from subprocess import run
 
 ESC="\033["
@@ -70,13 +69,13 @@ def GetHelp():
                 run - Run the project. Run this command at root of project only!
             """)
 def RunProject():
-    python_path = env.get("PYTHON_HOME", "")
+    python_path = executable
     if python_path == "" or not pl.Path(python_path).exists():
         print(f"{YELLOW}Please set environment variable PYTHON_HOME at your Python installation!{RESET}")
         return 1
     try:
         res = run(
-            f"\"{pl.Path(python_path) / "python"}\" src/main.py", 
+            f"\"{python_path}\" src/main.py", 
             shell=(platform.system() == "Windows"), 
             capture_output=True,
             text=True
