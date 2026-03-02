@@ -79,14 +79,10 @@ def RunProject():
         return 1
         
     try:
-        res = run(
+        run(
             [python_path, "src/main.py"],
-            shell=(platform.system() == "Windows"),
-            capture_output=True,
-            text=True
+            shell=(platform.system() == "Windows")
         )
-        print(RED + res.stderr + RESET)
-        print(res.stdout)
     except FileNotFoundError:
         print(f"{RED}Python environment at PYTHON_HOME({python_path}) is incorrect!{RESET}")
         return 1
@@ -115,12 +111,10 @@ def AddRuntime():
     builder.create(venv_dir)
     executable = pl.Path(venv_dir).joinpath("Scripts", "python.exe") if os.name == "nt" \
         else pl.Path(venv_dir).joinpath("bin", "python")
-    if os.name == "nt":
-        with open("launch.bat", "w") as f:
-            f.write("@echo off\n")
-            f.write(f"{executable} src\\main.py")
-    else:
-        with open("launch.sh", "w") as f:
+    with open("launch.bat", "w") as f:
+        f.write("@echo off\n")
+        f.write(f"{executable} src\\main.py")
+    with open("launch.sh", "w") as f:
             f.write(f"{executable} src/main.py")
     return executable
 
