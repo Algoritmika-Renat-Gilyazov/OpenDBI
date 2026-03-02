@@ -59,7 +59,7 @@ def CreateProject() -> int:
     print(f"{GREEN}The project '{id}'('{name}') was created successfully!{RESET}")
     return 0
 
-version = "1.0b1"
+version = "1.0"
 
 def GetHelp():
     print("""
@@ -123,8 +123,11 @@ if __name__ == "__main__":
         if argv[1] == "init":
             CreateProject()
         elif argv[1] == "info":
-            print("OpenDBI")
-            print(version)
+            import os
+            print(f"{GREEN}OpenDBI - CLI Project Manager{RESET}")
+            print(f"Version: {version}")
+            print(f"Location: {pl.Path(__file__).resolve()}") # Где лежит сам EXE
+            print(f"System: {platform.system()} {platform.release()}")
         elif argv[1] == "help":
             GetHelp()
         elif argv[1] == "run":
