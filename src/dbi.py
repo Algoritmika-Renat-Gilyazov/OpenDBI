@@ -67,6 +67,8 @@ def GetHelp():
                 info - Get information about OpenDBI.
                 help - Get help.
                 run - Run the project. Run this command at root of project only!
+                build pi - Build project with PyInstaller.
+                build runtime - Add Python runtime into project.
             """)
 def RunProject():
     import shutil
@@ -90,6 +92,7 @@ def RunProject():
         return 1
 def BuildProject(args: list):
     from PyInstaller.__main__ import run as build
+    
     work_dir = pl.Path.cwd()
     script_path = pl.Path("src").joinpath("main.py")
     data: dict = {}
@@ -102,6 +105,24 @@ def BuildProject(args: list):
         "--clean"
     ] + args
     build(args)
+def AddRuntime():
+    import venv
+
+    import os
+    
+    venv_dir = pl.Path(pl.Path.cwd()).joinpath(".runtime")
+    builder = venv.EnvBuilder(with_pip=True)
+    builder.create(venv_dir)
+    executable = pl.Path(venv_dir).joinpath("Scripts", "python.exe") if os.name == "nt" \
+        else pl.Path(venv_dir).joinpath("bin", "python")
+    if os.name == "nt":
+        with open("launch.bat", "w") as f:
+            f.write("@echo off\n")
+            f.write(f"{executable} src\\main.py")
+    else:
+        with open("launch.sh", "w") as f:
+            f.write(f"{executable} src/main.py")
+    return executable
 
 if __name__ == "__main__":
     try:
@@ -116,10 +137,19 @@ if __name__ == "__main__":
             RunProject()
         elif argv[1] == "build":
             try:
-                args = argv[2:]
+                mode = argv[2]
             except:
-                args = []
-            BuildProject(args)
+                mode = "pi"
+            if mode == "pi":
+                try:
+                    args = argv[3:]
+                except:
+                    args = []
+                BuildProject(args)
+            elif mode == "runtime":
+                AddRuntime()
+            else:
+                print(f"{RED}This mode not found!{RESET}")
         else:
             GetHelp()
     except IndexError:
