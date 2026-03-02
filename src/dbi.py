@@ -88,6 +88,20 @@ def RunProject():
     except FileNotFoundError:
         print(f"{RED}Python environment at PYTHON_HOME({python_path}) is incorrect!{RESET}")
         return 1
+def BuildProject(args: list):
+    from PyInstaller.__main__ import run as build
+    work_dir = pl.Path.cwd()
+    script_path = pl.Path("src").joinpath("main.py")
+    data: dict = {}
+    with open(work_dir / "dbi.json") as f:
+        data = json.load(f)
+    args = [
+        str(script_path),
+        "--onefile",
+        f"--name={data.get("project").get("name")}",
+        "--clean"
+    ] + args
+    build(args)
 
 if __name__ == "__main__":
     try:
@@ -100,6 +114,12 @@ if __name__ == "__main__":
             GetHelp()
         elif argv[1] == "run":
             RunProject()
+        elif argv[1] == "build":
+            try:
+                args = argv[2:]
+            except:
+                args = []
+            BuildProject(args)
         else:
             GetHelp()
     except IndexError:
