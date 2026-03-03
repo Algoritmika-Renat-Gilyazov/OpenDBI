@@ -10,7 +10,9 @@ GREEN=f"{ESC}32m"
 YELLOW=f"{ESC}33m"
 RESET=f"{ESC}0m"
 
-def inp(msg: str, title: str, default, path=False):
+def inp(msg: str, title: str, default=None, path=False):
+    """Extended input.<br><b>Args</b>:<br> msg: str - input message.<br>title: str - name in code.<br> default: Any - default value(<b>default</b>: None).<br>path: bool - Is path?(<b>default</b>: None)
+    """
     name = input(msg)
     if path:
         while '/' in name or '\\' in name:
@@ -19,12 +21,16 @@ def inp(msg: str, title: str, default, path=False):
     if name == "" or name.isspace():
         name = default
     return name
-def sw(msg: str, title: str, default="n"):
-    data = inp(msg, title, default)
+def sw(msg: str, title: str):
+    """Boolean input.<br><b>Args</b>:<br> msg: str - input message.<br>title: str - name in code.
+    """
+    data = inp(msg, title)
     if data.upper() != "Y":
         return False
     return True
 def CreateProject() -> int:
+    """Create Project. Returns int
+    """
     name = inp("Enter name of project(Default \"Example Project\"): ", "Name", "Example Project", True)
     id = name.lower().replace(" ", "_")
     root = pl.Path(pl.Path.joinpath(pl.Path.cwd(), id))
@@ -61,16 +67,9 @@ def CreateProject() -> int:
 
 version = "1.0"
 
-def GetHelp():
-    print("""
-                init - Create Project.
-                info - Get information about OpenDBI.
-                help - Get help.
-                run - Run the project. Run this command at root of project only!
-                build pi - Build project with PyInstaller.
-                build runtime - Add Python runtime into project.
-            """)
 def RunProject():
+    """Runs the project.
+    """
     import shutil
     python_path = shutil.which("python") or shutil.which("python3")
     
@@ -87,6 +86,8 @@ def RunProject():
         print(f"{RED}Python environment at PYTHON_HOME({python_path}) is incorrect!{RESET}")
         return 1
 def BuildProject(args: list):
+    """Builds the project with PyInstaller.<br><b>Args</b>:<br> args: list - PyInstaller args(<b>default</b>: [])
+    """
     from PyInstaller.__main__ import run as build
     
     work_dir = pl.Path.cwd()
@@ -102,6 +103,8 @@ def BuildProject(args: list):
     ] + args
     build(args)
 def AddRuntime():
+    """Builds the project with adding portative Python.
+    """
     import venv
 
     import os
